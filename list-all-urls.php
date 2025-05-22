@@ -1,16 +1,20 @@
 <?php
 /**
  * Plugin Name: List all URLs
- * Plugin URI: http://www.evanwebdesign.com/
+ * Plugin URI: https://jonathanbossenger.com
  * Description: Creates a page in the admin panel under Settings > List All URLs that outputs an ordered list of all of the website's published URLs.
- * Version: 0.2.1
- * Author: Evan Scheingross
- * Author URI: http://www.evanwebdesign.com/
+ * Version: 1.0.0
+ * Author: Jonathan Bossenger
+ * Author URI: https://jonathanbossenger.com
  * License: GPL v2 or higher
  * License URI: License URI: http://www.gnu.org/licenses/gpl-2.0.html
- * Tested up to: 6.4.1
+ * Tested up to: 6.8.1
  * Text Domain: list-all-urls
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 
 /**
  * Fetch all post types
@@ -109,6 +113,13 @@ function jb_lau_generate_url_list( $arguments = array() ) {
     }
 
     return $links;
+}
+
+/**
+ * Check if the WordPress Feature API plugin is installed and active
+ */
+if ( ! is_plugin_active( 'wp-feature-api/wp-feature-api.php' ) ) {
+	return;
 }
 
 /**
