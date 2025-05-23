@@ -2,8 +2,8 @@
 Contributors: evster, psykro
 Tags: URLs
 Requires at least: 3.0.1
-Tested up to: 5.6
-Stable Tag: 0.2.1
+Tested up to: 6.8.1
+Stable Tag: 1.0.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -43,6 +43,10 @@ Post a question in the support forum for this plugin and I will try to answer as
 The List All URLs admin page
 
 == Changelog ==
+
+= 1.0.0 =
+Complete rewrite of core functionality
+Added support for Feature API
 
 = 0.2.1 =
 Tested on WordPress 5.2.3 and PHP 7.3
