@@ -1,4 +1,4 @@
-=== Plugin Name ===
+=== List all URLs ===
 Contributors: evster, psykro
 Tags: URLs
 Requires at least: 3.0.1
