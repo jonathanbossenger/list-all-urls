@@ -1,9 +1,9 @@
 === List all URLs ===
-Contributors: evster, psykro
+Contributors: psykro, evster
 Tags: URLs
 Requires at least: 3.0.1
 Tested up to: 6.8.1
-Stable Tag: 1.0.0
+Stable Tag: 1.0.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -19,12 +19,6 @@ First off, it allows to to quickly check all of your website URLs to ensure they
 
 Secondly, let's say you're planning on moving your website to a new URL, or perhaps you would like to update many of your website's existing URLs for better SEO or accessibility. This plugin give you a quick and easy way to view all website URLs on one single screen and can serve as a great starting point for creating a list of 301 redirects as part of an .htaccess file.
 
-NEW FOR VERSION .2
-
-Now you can customize your list of URLs by page, post, custom post type, or simply get all URLs like in the original version.
-
-There is also a new option which can turn the list of generated URLs into clickable hyperlinks.
-
 If you spot a bug or have an idea of how I can improve my code please let me know.
 
 == Installation ==
@@ -39,14 +33,21 @@ If you spot a bug or have an idea of how I can improve my code please let me kno
 
 Post a question in the support forum for this plugin and I will try to answer as soon as possible.
 
+= Where can I log issues? =
+
+Development of this plugin now takes place in this [GitHub repository](https://github.com/jonathanbossenger/list-all-urls "GitHub"), so feel free to log issues there
+
 == Screenshots ==
 The List All URLs admin page
 
 == Changelog ==
 
+= 1.0.1 =
+Removal of Feature API integration
+Tested on WordPress 6.8.3
+
 = 1.0.0 =
 Complete rewrite of core functionality
-Added support for Feature API
 
 = 0.2.1 =
 Tested on WordPress 5.2.3 and PHP 7.3
