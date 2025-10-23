@@ -2,7 +2,7 @@
 /**
  * Plugin Name: List all URLs
  * Plugin URI: https://jonathanbossenger.com
- * Description: Creates a page in the admin panel under Settings > List All URLs that outputs an ordered list of all of the website's published URLs.
+ * Description: Outputs an ordered list of all the website's published Custom Post Type URLs.
  * Version: 1.0.1
  * Author: Jonathan Bossenger
  * Author URI: https://jonathanbossenger.com
@@ -61,7 +61,7 @@ function jb_lau_generate_url_list( array $arguments = array() ): array {
 }
 
 /**
- * Fetch posts based on provided arguments
+ * Fetch all posts based on provided arguments
  *
  * @param $arguments
  * @return array List of posts
@@ -80,10 +80,10 @@ function jb_lau_get_posts( $arguments ): array {
 add_action( 'admin_menu', 'jb_lau_plugin_menu' );
 
 /**
- * Add plugin menu to the WordPress admin dashboard
+ * Add plugin menu to the WordPress admin dashboard via the Tools menu
  */
 function jb_lau_plugin_menu() {
-	add_options_page( 'List All URLs', 'List All URLs', 'manage_options', 'list-all-urls', 'jb_lau_render_admin_page' );
+    add_management_page( 'List All URLs', 'List All URLs', 'manage_options', 'list-all-urls', 'jb_lau_render_admin_page' );
 }
 
 /**
