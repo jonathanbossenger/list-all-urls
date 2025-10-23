@@ -3,12 +3,12 @@
  * Plugin Name: List all URLs
  * Plugin URI: https://jonathanbossenger.com
  * Description: Creates a page in the admin panel under Settings > List All URLs that outputs an ordered list of all of the website's published URLs.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: Jonathan Bossenger
  * Author URI: https://jonathanbossenger.com
  * License: GPL v2 or higher
  * License URI: License URI: http://www.gnu.org/licenses/gpl-2.0.html
- * Tested up to: 6.8.1
+ * Tested up to: 6.8.3
  * Text Domain: list-all-urls
  */
 
@@ -46,46 +46,50 @@ function jb_lau_render_admin_page() {
     $post_types = jb_lau_get_all_post_types();
     ?>
 
-    <p><strong>Select the URLs you would like to list from the following options:</strong></p>
-    <form id = "myform" action = "" method = "post">
-        <input type="radio" name="getpost-radio" value="any"/> All URLs (pages, posts, and custom post types)<br>
-        <input type="radio" name="getpost-radio" value="page"/> Pages Only<br>
-        <input type="radio" name="getpost-radio" value="post"/> Posts Only<br>
-	    <?php
-	    foreach ( $post_types as $post_type ) {
-		    echo '<input type="radio" name="getpost-radio" value="' . $post_type->name . '"/> ' . $post_type->labels->singular_name . ' Posts Only<br>';
-	    }
-	    ?>
-        <br>
-        <input type="checkbox" name="makelinks" value="makelinks"  /> Make the generated list of URLs clickable hyperlinks <br>
-        <br>
+    <div class="wrap">
+    <h1>List All URLS</h1>
 
-        <input type="submit" class="button-primary" value="Submit"/>
-    </form>
+        <p><strong>Select the URLs you would like to list from the following options:</strong></p>
+        <form id = "myform" action = "" method = "post">
+            <input type="radio" name="getpost-radio" value="any"/> All URLs (pages, posts, and custom post types)<br>
+            <input type="radio" name="getpost-radio" value="page"/> Pages Only<br>
+            <input type="radio" name="getpost-radio" value="post"/> Posts Only<br>
+            <?php
+            foreach ( $post_types as $post_type ) {
+                echo '<input type="radio" name="getpost-radio" value="' . $post_type->name . '"/> ' . $post_type->labels->singular_name . ' Posts Only<br>';
+            }
+            ?>
+            <br>
+            <input type="checkbox" name="makelinks" value="makelinks"  /> Make the generated list of URLs clickable hyperlinks <br>
+            <br>
 
+            <input type="submit" class="button-primary" value="Submit"/>
+        </form>
+        <?php
+        // Check if the form is submitted
+        if ( isset( $_POST['getpost-radio'] ) && ! empty( [ $_POST['getpost-radio'] ] ) ) {
+
+            $post_type = sanitize_text_field( $_POST['getpost-radio'] );
+            $args = array(
+                'post_type'      => $post_type,
+                'posts_per_page' => -1,
+                'post_status'    => 'publish',
+            );
+
+            $links = jb_lau_generate_url_list(  $args );
+
+            if ( $links ) {
+                echo '<p><strong>Below is a list of your requested URLs:</strong></p>';
+                echo '<ol>';
+                foreach ( $links as $link ) {
+                    echo '<li>' . $link . '</li>';
+                }
+                echo '</ol>';
+            }
+        }
+        ?>
+    </div>
     <?php
-
-	// Check if the form is submitted
-	if ( isset( $_POST['getpost-radio'] ) && ! empty( [ $_POST['getpost-radio'] ] ) ) {
-
-	    $post_type = sanitize_text_field( $_POST['getpost-radio'] );
-	    $args = array(
-		    'post_type'      => $post_type,
-		    'posts_per_page' => -1,
-		    'post_status'    => 'publish',
-	    );
-
-	    $links = jb_lau_generate_url_list(  $args );
-
-	    if ( $links ) {
-		    echo '<p><strong>Below is a list of your requested URLs:</strong></p>';
-		    echo '<ol>';
-		    foreach ( $links as $link ) {
-			    echo '<li>' . $link . '</li>';
-		    }
-		    echo '</ol>';
-	    }
-    }
 
 } // end jb_lau_render_admin_page()
 
