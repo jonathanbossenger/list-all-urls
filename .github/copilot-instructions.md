@@ -5,7 +5,7 @@ This is a WordPress plugin that generates a list of all published post URLs in a
 ## Project Overview
 
 **Plugin Name:** List all URLs  
-**Purpose:** Creates an admin page under Settings > List All URLs that outputs an ordered list of all published URLs from posts, pages, and custom post types.  
+**Purpose:** Creates an admin page under Tools > List All URLs that outputs an ordered list of all published URLs from posts, pages, and custom post types.  
 **WordPress Version:** Tested up to 6.8.3  
 **PHP Version:** Requires PHP 8.0 or higher  
 **License:** GPL v2 or later
@@ -62,6 +62,7 @@ When making changes:
 - Follow existing naming conventions (function prefix: `jb_lau_`)
 - Update version number and changelog in plugin header if making substantial changes
 - Add inline documentation for new functions using PHPDoc format
+- Only add single line documentation comments for complex logic within functions
 
 ### Testing
 
