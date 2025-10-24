@@ -15,6 +15,8 @@
  * @package ListAllURLs
  */
 
+namespace JonathanBossenger\ListAllUrls;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -24,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @return string[]|WP_Post_Type[]
  */
-function jb_lau_get_all_post_types(): array {
+function get_all_post_types(): array {
 	// Get all Custom Post Types, and ONLY Custom Post Types.
 	// See http://codex.wordpress.org/Function_Reference/get_post_types.
 	$args     = array(
@@ -45,8 +47,8 @@ function jb_lau_get_all_post_types(): array {
  *
  * @return array List of generated URLs.
  */
-function jb_lau_generate_url_list( array $arguments = array(), bool $makelinks = false ): array {
-	$posts = jb_lau_get_posts( $arguments );
+function generate_url_list( array $arguments = array(), bool $makelinks = false ): array {
+	$posts = get_posts( $arguments );
 
 	$links = array();
 	foreach ( $posts as $post ) {
@@ -68,7 +70,7 @@ function jb_lau_generate_url_list( array $arguments = array(), bool $makelinks =
  *
  * @return array List of posts.
  */
-function jb_lau_get_posts( array $arguments ): array {
+function get_posts( array $arguments ): array {
 	$default_args = array(
 		'post_type'      => 'post',
 		'posts_per_page' => - 1,
@@ -79,23 +81,23 @@ function jb_lau_get_posts( array $arguments ): array {
 	return get_posts( $args );
 }
 
-add_action( 'admin_menu', 'jb_lau_plugin_menu' );
+add_action( 'admin_menu', 'plugin_menu' );
 
 /**
  * Add plugin menu to the WordPress admin dashboard via the Tools menu
  */
-function jb_lau_plugin_menu() {
-	add_management_page( 'List All URLs', 'List All URLs', 'manage_options', 'list-all-urls', 'jb_lau_render_admin_page' );
+function plugin_menu() {
+	add_management_page( 'List All URLs', 'List All URLs', 'manage_options', 'list-all-urls', 'render_admin_page' );
 }
 
 /**
  * Render the admin page for the plugin
  */
-function jb_lau_render_admin_page() {
+function render_admin_page() {
 	if ( ! current_user_can( 'manage_options' ) ) {
 		wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'list-all-urls' ) );
 	}
-	$post_types = jb_lau_get_all_post_types();
+	$post_types = get_all_post_types();
 	?>
 
 	<div class="wrap">
@@ -103,7 +105,7 @@ function jb_lau_render_admin_page() {
 
 		<p><strong>Select the URLs you would like to list from the following options:</strong></p>
 		<form id="myform" action="" method="post">
-			<?php wp_nonce_field( 'jb_lau_action', 'jb_lau_nonce' ); ?>
+			<?php wp_nonce_field( 'action', 'nonce' ); ?>
 			<label for="getpost-any"><input id="getpost-any" type="radio" name="getpost-radio" value="any"/> All URLs
 				(pages, posts, and custom post types)</label><br>
 			<label for="getpost-page"><input id="getpost-page" type="radio" name="getpost-radio" value="page"/> Pages
@@ -129,7 +131,7 @@ function jb_lau_render_admin_page() {
 		$raw_getpost = filter_input( INPUT_POST, 'getpost-radio', FILTER_UNSAFE_RAW );
 		if ( false !== $raw_getpost && null !== $raw_getpost && '' !== $raw_getpost ) {
 
-			check_admin_referer( 'jb_lau_action', 'jb_lau_nonce' );
+			check_admin_referer( 'action', 'nonce' );
 
 			$post_type = sanitize_text_field( wp_unslash( $raw_getpost ) );
 
@@ -145,7 +147,7 @@ function jb_lau_render_admin_page() {
 				'post_status'    => 'publish',
 			);
 
-			$links = jb_lau_generate_url_list( $args, $makelinks );
+			$links = generate_url_list( $args, $makelinks );
 
 			if ( $links ) {
 				echo '<p><strong>Below is a list of your requested URLs:</strong></p>';
