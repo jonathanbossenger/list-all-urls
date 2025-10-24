@@ -22,8 +22,8 @@ if ( ! \defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-add_action( 'abilities_api_categories_init', 'my_plugin_register_categories' );
-function my_plugin_register_categories() {
+add_action( 'abilities_api_categories_init', __NAMESPACE__ . '\\register_categories' );
+function register_categories() {
     wp_register_ability_category( 'list-all-urls', array(
             'label' => __( 'List all URLs', 'list-all-urls' ),
             'description' => __( 'Abilities restricted to the List All URLs plugin.', 'list-all-urls' ),
@@ -50,7 +50,8 @@ function get_all_post_types(): array {
 }
 
 /**
- * Generate a list of URLs based on the provided arguments. Depending on the makelinks argument, will either be clickable or not
+ * Generate a list of URLs based on the provided arguments.
+ * Depending on the makelinks argument, will either be clickable or not
  *
  * @param array $arguments Arguments to customize the URL generation.
  * @param bool  $makelinks Whether to return clickable links or plain URLs (escaped).
@@ -108,7 +109,7 @@ function register_rest_route (): void {
             '/',
             array(
                 'methods' => 'GET',
-                'callback' => __NAMESPACE__ . '\\fetch_all_urls_rest_callback',
+                'callback' => __NAMESPACE__ . '\\rest_fetch_all_urls',
                 'args' => array(
                         'type' => array(
                                 'validate_callback' => function( $param ) {
@@ -120,8 +121,8 @@ function register_rest_route (): void {
     );
 }
 
-function fetch_all_urls_rest_callback( $arguments ){
-    if (isset($arguments['type'])) {
+function rest_fetch_all_urls( $arguments ){
+    if ( isset($arguments['type'] ) ) {
         $post_type = \sanitize_text_field( \wp_unslash( $arguments['type'] ) );
     } else {
         $post_type = 'any';
@@ -131,16 +132,22 @@ function fetch_all_urls_rest_callback( $arguments ){
         'posts_per_page' => - 1,
         'post_status'    => 'publish',
     );
-
+    return get_posts( $args );
 }
 
 
-\add_action( 'admin_menu', 'plugin_menu' );
+\add_action( 'admin_menu', __NAMESPACE__ . '\\plugin_menu' );
 /**
  * Add plugin menu to the WordPress admin dashboard via the Tools menu
  */
 function plugin_menu() {
-	\add_management_page( 'List All URLs', 'List All URLs', 'manage_options', 'list-all-urls', 'render_admin_page' );
+	\add_management_page(
+            'List All URLs',
+            'List All URLs',
+            'manage_options',
+            'list-all-urls',
+            __NAMESPACE__ . '\\render_admin_page'
+    );
 }
 
 /**
@@ -159,23 +166,33 @@ function render_admin_page() {
 		<p><strong>Select the URLs you would like to list from the following options:</strong></p>
 		<form id="myform" action="" method="post">
 			<?php \wp_nonce_field( 'action', 'nonce' ); ?>
-			<label for="getpost-any"><input id="getpost-any" type="radio" name="getpost-radio" value="any"/> All URLs
-				(pages, posts, and custom post types)</label><br>
-			<label for="getpost-page"><input id="getpost-page" type="radio" name="getpost-radio" value="page"/> Pages
-				Only</label><br>
-			<label for="getpost-post"><input id="getpost-post" type="radio" name="getpost-radio" value="post"/> Posts
-				Only</label><br>
+			<label for="getpost-any">
+                <input id="getpost-any" type="radio" name="getpost-radio" value="any"/> All URLs (pages, posts, and custom post types)
+            </label>
+            <br>
+			<label for="getpost-page">
+                <input id="getpost-page" type="radio" name="getpost-radio" value="page"/> Pages Only
+            </label>
+            <br>
+			<label for="getpost-post">
+                <input id="getpost-post" type="radio" name="getpost-radio" value="post"/> Posts Only
+            </label>
+            <br>
 			<?php
 			foreach ( $post_types as $post_type ) :
 				$pt_id = 'getpost-' . $post_type->name;
 				?>
-				<label for="<?php echo \esc_attr( $pt_id ); ?>"><input id="<?php echo \esc_attr( $pt_id ); ?>" type="radio" name="getpost-radio"
-						value="<?php echo \esc_attr( $post_type->name ); ?>"/> <?php echo \esc_html( $post_type->labels->singular_name ); ?>
-					Posts Only</label><br>
+				<label for="<?php echo \esc_attr( $pt_id ); ?>">
+                    <input id="<?php echo \esc_attr( $pt_id ); ?>" type="radio" name="getpost-radio" value="<?php echo \esc_attr( $post_type->name ); ?>"/> <?php echo \esc_html( $post_type->labels->singular_name ); ?>
+					Posts Only
+                </label>
+                <br>
 			<?php endforeach; ?>
 			<br>
-			<label for="makelinks"><input id="makelinks" type="checkbox" name="makelinks" value="makelinks"/> Make the
-				generated list of URLs clickable hyperlinks</label> <br>
+			<label for="makelinks">
+                <input id="makelinks" type="checkbox" name="makelinks" value="makelinks"/> Make the generated list of URLs clickable hyperlinks
+            </label>
+            <br>
 			<br>
 
 			<input type="submit" class="button-primary" value="Submit"/>
