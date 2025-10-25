@@ -12,7 +12,8 @@ import { __ } from '@wordpress/i18n';
  * @see https://developer.wordpress.org/block-editor/reference-guides/packages/packages-block-editor/#useblockprops
  */
 import { useBlockProps } from '@wordpress/block-editor';
-
+import { useState, useEffect } from '@wordpress/element';
+import apiFetch from '@wordpress/api-fetch';
 
 /**
  * Lets webpack process CSS, SASS or SCSS files referenced in JavaScript files.
@@ -31,13 +32,33 @@ import './editor.scss';
  * @return {Element} Element to render.
  */
 export default function Edit() {
+    const [urls, setUrls] = useState([]);
 
-	return (
-		<p { ...useBlockProps() }>
-			{ __(
-				'List All Urls Block – hello from the editor!',
-				'list-all-urls-block'
-			) }
-		</p>
-	);
+    useEffect(() => {
+        apiFetch( { path: '/list-all-urls/v1/urls' } ).then( ( urls ) => {
+            setUrls( urls );
+        } );
+    }, []);
+
+    if ( ! urls ) {
+        return (
+            <div { ...useBlockProps() }>
+                <p>{ __(
+                    'Loading...',
+                    'list-all-urls'
+                ) }</p>
+            </div>
+        );
+    }
+
+    let urlsList = urls.map( ( url ) => {
+        return <li><a href={ url }>{ url }</a></li>;
+    });
+
+    return (
+        <div { ...useBlockProps() }>
+            <ul>{ urlsList }</ul>
+        </div>
+    );
+
 }

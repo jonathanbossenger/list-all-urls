@@ -20,15 +20,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-add_action( 'abilities_api_categories_init', 'list_all_urls_register_categories' );
-function list_all_urls_register_categories() {
-    wp_register_ability_category( 'list-all-urls', array(
-            'label' => __( 'List all URLs', 'list-all-urls' ),
-            'description' => __( 'Abilities restricted to the List All URLs plugin.', 'list-all-urls' ),
-    ));
-}
-
-
 /**
  * Fetch all available post types. Used to generate the list of post type in the admin page
  *
@@ -45,6 +36,24 @@ function list_all_urls_get_all_post_types(): array {
 	$operator = 'and'; // one of either 'and' or 'or'.
 
 	return get_post_types( $args, $output, $operator );
+}
+
+/**
+ * Fetch all posts based on provided arguments
+ *
+ * @param array $arguments Arguments to customize the post retrieval.
+ *
+ * @return array List of posts.
+ */
+function list_all_urls_get_posts( array $arguments ): array {
+    $default_args = array(
+            'post_type'      => 'post',
+            'posts_per_page' => - 1,
+            'post_status'    => 'publish',
+    );
+    $args         = wp_parse_args( $arguments, $default_args );
+
+    return get_posts( $args );
 }
 
 /**
@@ -72,24 +81,6 @@ function list_all_urls_generate_url_list( array $arguments = array(), bool $make
 	return $links;
 }
 
-/**
- * Fetch all posts based on provided arguments
- *
- * @param array $arguments Arguments to customize the post retrieval.
- *
- * @return array List of posts.
- */
-function list_all_urls_get_posts( array $arguments ): array {
-	$default_args = array(
-		'post_type'      => 'post',
-		'posts_per_page' => - 1,
-		'post_status'    => 'publish',
-	);
-	$args         = wp_parse_args( $arguments, $default_args );
-
-	return get_posts( $args );
-}
-
 add_action( 'init', 'list_all_urls_blocks_init' );
 /**
  * Register the plugin blocks
@@ -104,7 +95,7 @@ add_action( 'rest_api_init', 'list_all_urls_register_rest_route' );
 function list_all_urls_register_rest_route (): void {
     register_rest_route(
             'list-all-urls/v1',
-            '/',
+            '/urls',
             array(
                 'methods' => 'GET',
                 'callback' => 'list_all_urls_rest_fetch_all_urls',
@@ -127,12 +118,9 @@ function list_all_urls_rest_fetch_all_urls( $arguments ){
     }
     $args = array(
         'post_type'      => $post_type,
-        'posts_per_page' => - 1,
-        'post_status'    => 'publish',
     );
-    return list_all_urls_get_posts( $args );
+    return list_all_urls_generate_url_list( $args );
 }
-
 
 add_action( 'admin_menu', 'list_all_urls_plugin_menu' );
 /**
