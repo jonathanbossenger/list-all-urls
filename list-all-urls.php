@@ -39,26 +39,8 @@ function list_all_urls_get_all_post_types(): array {
 }
 
 /**
- * Fetch all posts based on provided arguments
- *
- * @param array $arguments Arguments to customize the post retrieval.
- *
- * @return array List of posts.
- */
-function list_all_urls_get_posts( array $arguments ): array {
-    $default_args = array(
-            'post_type'      => 'post',
-            'posts_per_page' => - 1,
-            'post_status'    => 'publish',
-    );
-    $args         = wp_parse_args( $arguments, $default_args );
-
-    return get_posts( $args );
-}
-
-/**
- * Generate a list of URLs based on the provided arguments.
- * Depending on the makelinks argument, will either be clickable or not
+ * Generate a list of URLs based on the provided arguments
+ * Optionally make them clickable links
  *
  * @param array $arguments Arguments to customize the URL generation.
  * @param bool  $makelinks Whether to return clickable links or plain URLs (escaped).
@@ -66,19 +48,25 @@ function list_all_urls_get_posts( array $arguments ): array {
  * @return array List of generated URLs.
  */
 function list_all_urls_generate_url_list( array $arguments = array(), bool $makelinks = false ): array {
-	$posts = get_posts( $arguments );
+    $default_args   = array(
+            'post_type'      => 'post',
+            'posts_per_page' => - 1,
+            'post_status'    => 'publish',
+    );
+    $args           = wp_parse_args( $arguments, $default_args );
+    $posts          = get_posts( $args );
 
-	$links = array();
-	foreach ( $posts as $post ) {
-		$permalink = get_permalink( $post );
-		if ( $makelinks ) {
-			$links[] = '<a href="' . esc_url( $permalink ) . '">' . esc_html( $permalink ) . '</a>';
-		} else {
-			$links[] = esc_html( $permalink );
-		}
-	}
+    $links = array();
+    foreach ( $posts as $post ) {
+        $permalink = get_permalink( $post );
+        if ( $makelinks ) {
+            $links[] = '<a href="' . esc_url( $permalink ) . '">' . esc_html( $permalink ) . '</a>';
+        } else {
+            $links[] = esc_html( $permalink );
+        }
+    }
 
-	return $links;
+    return $links;
 }
 
 add_action( 'init', 'list_all_urls_blocks_init' );
