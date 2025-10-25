@@ -15,8 +15,6 @@
  * @package ListAllURLs
  */
 
-namespace JonathanBossenger\ListAllUrls;
-
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -26,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @return string[]|WP_Post_Type[]
  */
-function get_all_post_types(): array {
+function list_all_urls_get_all_post_types(): array {
 	// Get all Custom Post Types, and ONLY Custom Post Types.
 	// See http://codex.wordpress.org/Function_Reference/get_post_types.
 	$args     = array(
@@ -47,7 +45,7 @@ function get_all_post_types(): array {
  *
  * @return array List of generated URLs.
  */
-function generate_url_list( array $arguments = array(), bool $makelinks = false ): array {
+function list_all_urls_generate_url_list( array $arguments = array(), bool $makelinks = false ): array {
 	$posts = get_posts( $arguments );
 
 	$links = array();
@@ -70,7 +68,7 @@ function generate_url_list( array $arguments = array(), bool $makelinks = false 
  *
  * @return array List of posts.
  */
-function get_posts( array $arguments ): array {
+function list_all_urls_get_posts( array $arguments ): array {
 	$default_args = array(
 		'post_type'      => 'post',
 		'posts_per_page' => - 1,
@@ -81,19 +79,19 @@ function get_posts( array $arguments ): array {
 	return get_posts( $args );
 }
 
-add_action( 'admin_menu', 'plugin_menu' );
+add_action( 'admin_menu', 'list_all_urls_plugin_menu' );
 
 /**
  * Add plugin menu to the WordPress admin dashboard via the Tools menu
  */
-function plugin_menu() {
-	add_management_page( 'List All URLs', 'List All URLs', 'manage_options', 'list-all-urls', 'render_admin_page' );
+function list_all_urls_plugin_menu() {
+	add_management_page( 'List All URLs', 'List All URLs', 'manage_options', 'list-all-urls', 'list_all_urls_render_admin_page' );
 }
 
 /**
  * Render the admin page for the plugin
  */
-function render_admin_page() {
+function list_all_urls_render_admin_page() {
 	if ( ! current_user_can( 'manage_options' ) ) {
 		wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'list-all-urls' ) );
 	}
@@ -106,23 +104,17 @@ function render_admin_page() {
 		<p><strong>Select the URLs you would like to list from the following options:</strong></p>
 		<form id="myform" action="" method="post">
 			<?php wp_nonce_field( 'action', 'nonce' ); ?>
-			<label for="getpost-any"><input id="getpost-any" type="radio" name="getpost-radio" value="any"/> All URLs
-				(pages, posts, and custom post types)</label><br>
-			<label for="getpost-page"><input id="getpost-page" type="radio" name="getpost-radio" value="page"/> Pages
-				Only</label><br>
-			<label for="getpost-post"><input id="getpost-post" type="radio" name="getpost-radio" value="post"/> Posts
-				Only</label><br>
+			<label for="getpost-any"><input id="getpost-any" type="radio" name="getpost-radio" value="any"/> All URLs (pages, posts, and custom post types)</label><br>
+			<label for="getpost-page"><input id="getpost-page" type="radio" name="getpost-radio" value="page"/> Pages Only</label><br>
+			<label for="getpost-post"><input id="getpost-post" type="radio" name="getpost-radio" value="post"/> Posts Only</label><br>
 			<?php
 			foreach ( $post_types as $post_type ) :
 				$pt_id = 'getpost-' . $post_type->name;
 				?>
-				<label for="<?php echo esc_attr( $pt_id ); ?>"><input id="<?php echo esc_attr( $pt_id ); ?>" type="radio" name="getpost-radio"
-						value="<?php echo esc_attr( $post_type->name ); ?>"/> <?php echo esc_html( $post_type->labels->singular_name ); ?>
-					Posts Only</label><br>
+				<label for="<?php echo esc_attr( $pt_id ); ?>"><input id="<?php echo esc_attr( $pt_id ); ?>" type="radio" name="getpost-radio" value="<?php echo esc_attr( $post_type->name ); ?>"/> <?php echo esc_html( $post_type->labels->singular_name ); ?>Posts Only</label><br>
 			<?php endforeach; ?>
 			<br>
-			<label for="makelinks"><input id="makelinks" type="checkbox" name="makelinks" value="makelinks"/> Make the
-				generated list of URLs clickable hyperlinks</label> <br>
+			<label for="makelinks"><input id="makelinks" type="checkbox" name="makelinks" value="makelinks"/> Make the generated list of URLs clickable hyperlinks</label> <br>
 			<br>
 
 			<input type="submit" class="button-primary" value="Submit"/>
@@ -147,7 +139,7 @@ function render_admin_page() {
 				'post_status'    => 'publish',
 			);
 
-			$links = generate_url_list( $args, $makelinks );
+			$links = list_all_urls_generate_url_list( $args, $makelinks );
 
 			if ( $links ) {
 				echo '<p><strong>Below is a list of your requested URLs:</strong></p>';
