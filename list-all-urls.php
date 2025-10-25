@@ -39,6 +39,7 @@ function list_all_urls_get_all_post_types(): array {
 
 /**
  * Generate a list of URLs based on the provided arguments
+ * Optionally make them clickable links
  *
  * @param array $arguments Arguments to customize the URL generation.
  * @param bool  $makelinks Whether to return clickable links or plain URLs (escaped).
@@ -46,7 +47,13 @@ function list_all_urls_get_all_post_types(): array {
  * @return array List of generated URLs.
  */
 function list_all_urls_generate_url_list( array $arguments = array(), bool $makelinks = false ): array {
-	$posts = get_posts( $arguments );
+    $default_args   = array(
+            'post_type'      => 'post',
+            'posts_per_page' => - 1,
+            'post_status'    => 'publish',
+    );
+    $args           = wp_parse_args( $arguments, $default_args );
+    $posts          = get_posts( $args );
 
 	$links = array();
 	foreach ( $posts as $post ) {
@@ -61,26 +68,7 @@ function list_all_urls_generate_url_list( array $arguments = array(), bool $make
 	return $links;
 }
 
-/**
- * Fetch all posts based on provided arguments
- *
- * @param array $arguments Arguments to customize the post retrieval.
- *
- * @return array List of posts.
- */
-function list_all_urls_get_posts( array $arguments ): array {
-	$default_args = array(
-		'post_type'      => 'post',
-		'posts_per_page' => - 1,
-		'post_status'    => 'publish',
-	);
-	$args         = wp_parse_args( $arguments, $default_args );
-
-	return get_posts( $args );
-}
-
 add_action( 'admin_menu', 'list_all_urls_plugin_menu' );
-
 /**
  * Add plugin menu to the WordPress admin dashboard via the Tools menu
  */
