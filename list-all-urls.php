@@ -20,6 +20,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+if ( file_exists( plugin_dir_path( __FILE__ ) . '/vendor/autoload.php' ) ) {
+    require_once plugin_dir_path( __FILE__ ) . '/vendor/autoload.php';
+}
+
 /**
  * Fetch all available post types. Used to generate the list of post type in the admin page
  *
@@ -38,7 +42,7 @@ function list_all_urls_get_all_post_types(): array {
 	return get_post_types( $args, $output, $operator );
 }
 
-add_action( 'abilities_api_categories_init', 'list_all_urls_register_ability_categories' );
+add_action( 'wp_abilities_api_categories_init', 'list_all_urls_register_ability_categories' );
 /**
  * Register the ability category for the plugin
  *
@@ -51,7 +55,7 @@ function list_all_urls_register_ability_categories() {
     ));
 }
 
-add_action( 'abilities_api_init', 'list_all_urls_register_abilities' );
+add_action( 'wp_abilities_api_init', 'list_all_urls_register_abilities' );
 function list_all_urls_register_abilities() {
     wp_register_ability(
         'list-all-urls/urls',
@@ -91,6 +95,9 @@ function list_all_urls_register_abilities() {
             ),
             'execute_callback' => 'list_all_urls_generate_url_list',
             'permission_callback' => '__return_true',
+            'meta' => array(
+                    'show_in_rest' => true,
+            ),
         )
     );
 }
@@ -131,7 +138,9 @@ add_action( 'init', 'list_all_urls_blocks_init' );
  * @return void
  */
 function list_all_urls_blocks_init() {
-	wp_register_block_types_from_metadata_collection( __DIR__ . '/build', __DIR__ . '/build/blocks-manifest.php' );
+    if ( file_exists(__DIR__ . '/build/blocks-manifest.php') ) {
+        wp_register_block_types_from_metadata_collection( __DIR__ . '/build', __DIR__ . '/build/blocks-manifest.php' );
+    }
 }
 
 add_action( 'admin_menu', 'list_all_urls_plugin_menu' );

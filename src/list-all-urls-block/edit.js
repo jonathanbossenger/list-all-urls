@@ -13,7 +13,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { useBlockProps } from '@wordpress/block-editor';
 import { useState, useEffect } from '@wordpress/element';
-import apiFetch from '@wordpress/api-fetch';
+import { executeAbility } from '@wordpress/abilities';
 
 /**
  * Lets webpack process CSS, SASS or SCSS files referenced in JavaScript files.
@@ -35,7 +35,7 @@ export default function Edit() {
     const [urls, setUrls] = useState([]);
 
     useEffect(() => {
-        apiFetch( { path: '/list-all-urls/v1/urls' } ).then( ( urls ) => {
+        executeAbility( 'list-all-urls/urls', { 'post_type': 'any' } ).then( ( urls ) => {
             setUrls( urls );
         } );
     }, []);
@@ -50,15 +50,13 @@ export default function Edit() {
             </div>
         );
     }
-
+    
     let urlsList = urls.map( ( url ) => {
         return <li><a href={ url }>{ url }</a></li>;
     });
-
     return (
         <div { ...useBlockProps() }>
             <ul>{ urlsList }</ul>
         </div>
     );
-
 }
