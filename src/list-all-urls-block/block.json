@@ -11,6 +11,12 @@
 	"supports": {
 		"html": false
 	},
+    "attributes": {
+        "makeLinks": {
+            "type": "boolean",
+            "default": true
+        }
+    },
 	"textdomain": "list-all-urls-block",
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",

@@ -71,11 +71,11 @@ function list_all_urls_register_abilities() {
                                 'description' => 'The post type to retrieve URLs from (e.g., post, page, custom post type).',
                             ),
                         'posts_per_page' => array(
-                                'type' => 'boolean',
+                                'type' => 'integer',
                                 'description' => 'Number of posts to retrieve. Use -1 to retrieve all posts.',
                         ),
                         'post_status' => array(
-                                'type' => 'boolean',
+                                'type' => 'string',
                                 'description' => 'The status of the posts to retrieve (e.g., publish, draft).',
                         ),
                         'makelinks' => array(
@@ -225,13 +225,14 @@ function list_all_urls_render_admin_page() {
                 'makelinks'      => $makelinks,
 			);
 
-			$links = list_all_urls_generate_url_list( $input );
+            $urlsAbility = wp_get_ability( 'list-all-urls/urls' );
+            $urls = $urlsAbility->execute( $input );
 
-			if ( $links ) {
+			if ( $urls ) {
 				echo '<p><strong>Below is a list of your requested URLs:</strong></p>';
 				echo '<ol>';
-				foreach ( $links as $link ) {
-					echo '<li>' . wp_kses_post( $link ) . '</li>';
+				foreach ( $urls as $url ) {
+					echo '<li>' . wp_kses_post( $url ) . '</li>';
 				}
 				echo '</ol>';
 			}

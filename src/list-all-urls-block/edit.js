@@ -31,11 +31,11 @@ import './editor.scss';
  *
  * @return {Element} Element to render.
  */
-export default function Edit() {
+export default function Edit( { attributes } ) {
     const [urls, setUrls] = useState([]);
 
     useEffect(() => {
-        executeAbility( 'list-all-urls/urls', { 'post_type': 'any' } ).then( ( urls ) => {
+        executeAbility( 'list-all-urls/urls', { 'makelinks': attributes.makeLinks } ).then( ( urls ) => {
             setUrls( urls );
         } );
     }, []);
@@ -50,9 +50,9 @@ export default function Edit() {
             </div>
         );
     }
-    
+
     let urlsList = urls.map( ( url ) => {
-        return <li><a href={ url }>{ url }</a></li>;
+        return <li dangerouslySetInnerHTML={ { __html: url } }></li>;
     });
     return (
         <div { ...useBlockProps() }>
