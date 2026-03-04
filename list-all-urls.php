@@ -68,6 +68,53 @@ function list_all_urls_generate_url_list( array $arguments = array(), bool $make
 	return $links;
 }
 
+add_action( 'admin_init', 'list_all_urls_handle_csv_export' );
+/**
+ * Handle CSV export: validates the request, then streams a CSV file to the browser.
+ */
+function list_all_urls_handle_csv_export() {
+	$raw_export = filter_input( INPUT_POST, 'export-csv', FILTER_UNSAFE_RAW );
+	if ( false === $raw_export || null === $raw_export || '' === $raw_export ) {
+		return;
+	}
+
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'list-all-urls' ) );
+	}
+
+	check_admin_referer( 'action', 'nonce' );
+
+	$raw_getpost = filter_input( INPUT_POST, 'getpost-radio', FILTER_UNSAFE_RAW );
+	if ( false === $raw_getpost || null === $raw_getpost || '' === $raw_getpost ) {
+		return;
+	}
+
+	$post_type = sanitize_text_field( wp_unslash( $raw_getpost ) );
+
+	$args = array(
+		'post_type'      => $post_type,
+		'posts_per_page' => - 1,
+		'post_status'    => 'publish',
+	);
+
+	$posts = get_posts( $args );
+
+	header( 'Content-Type: text/csv; charset=utf-8' );
+	header( 'Content-Disposition: attachment; filename="urls-export.csv"' );
+	header( 'Pragma: no-cache' );
+	header( 'Expires: 0' );
+
+	// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
+	$output = fopen( 'php://output', 'w' );
+	fputcsv( $output, array( 'URL' ) );
+	foreach ( $posts as $post ) {
+		fputcsv( $output, array( get_permalink( $post ) ) );
+	}
+	// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+	fclose( $output );
+	exit;
+}
+
 add_action( 'admin_menu', 'list_all_urls_plugin_menu' );
 /**
  * Add plugin menu to the WordPress admin dashboard via the Tools menu
@@ -106,6 +153,7 @@ function list_all_urls_render_admin_page() {
 			<br>
 
 			<input type="submit" class="button-primary" value="Submit"/>
+			<input type="submit" class="button-secondary" name="export-csv" value="<?php esc_attr_e( 'Export as CSV', 'list-all-urls' ); ?>"/>
 		</form>
 		<?php
 		$raw_getpost = filter_input( INPUT_POST, 'getpost-radio', FILTER_UNSAFE_RAW );
